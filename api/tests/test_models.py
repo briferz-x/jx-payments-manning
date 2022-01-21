@@ -1,3 +1,6 @@
+import sys
+print(sys.path)
+
 from django.test import TestCase
 from django.apps import AppConfig
 from api.models import Payment, BankTransfer
