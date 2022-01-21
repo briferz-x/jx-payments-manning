@@ -27,6 +27,9 @@ spec:
         - name: jx-variables
           resources: {}
         - name: build-python-unittest
+          script: |
+            #!/usr/bin/env sh
+            pip install -r requirements.txt && python manage.py test
           resources: {}
         - name: check-registry
           resources: {}
