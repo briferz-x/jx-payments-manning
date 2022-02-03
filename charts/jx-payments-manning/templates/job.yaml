@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    draft: {{ default "draft-app" .Values.draft }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    {{- if .Values.deploymentLabels }}
+    {{ toYaml .Values.deploymentLabels | indent 4 }}
+    {{- end }}
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        app: jx-payments
+    spec:
+      restartPolicy: OnFailure
+      volumes:
+        - name: {{ .Values.volume.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.pvc.name }}
+      containers:
+        - name: {{ .Chart.Name }}-migration
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command: [ "python" ]
+          args: [ "manage.py", "migrate" ]
+          volumeMounts:
+            - name: {{ .Values.volume.name }}
+              mountPath: {{ .Values.volume.mountPath }}

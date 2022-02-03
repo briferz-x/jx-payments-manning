@@ -7,8 +7,8 @@ metadata:
   labels:
     draft: {{ default "draft-app" .Values.draft }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
-{{- if .Values.deploymentLabels }}
-{{ toYaml .Values.deploymentLabels | indent 4 }}
+{{- if .Values.jobLabels }}
+{{ toYaml .Values.jobLabels | indent 4 }}
 {{- end }}
 spec:
   selector:
@@ -38,10 +38,22 @@ spec:
       serviceAccountName: {{ template "fullname" . }}
 {{- end }}
 {{- end }}
+      initContainers:
+        - name: {{ .Chart.Name }}-init
+          image: "groundnuty/k8s-wait-for:v1.3"
+          imagePullPolicy: IfNotPresent
+          args: [ "job", {{ template "fullname" . }} ]
+      volumes:
+        - name: {{ .Values.volume.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.pvc.name }}
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+          - name: {{ .Values.volume.name }}
+            mountPath: {{ .Values.volume.mountPath }}
         env:
         - name: VERSION
           value: {{ .Chart.Version }}
