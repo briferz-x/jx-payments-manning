@@ -8,6 +8,8 @@ podAnnotations: {}
 podsLabels: {}
 # Add labels to the deployment
 deploymentLabels: {}
+# Add labels to the job
+jobLabels: {}
 
 image:
   repository: draft
@@ -111,6 +113,19 @@ serviceAccount:
   # Add labels to the SA
   labels: {}
 #    my-custom-label: value
+
+pvc:
+  name: jx-payments-manning
+  annotations: {}
+  labels: {}
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  storage: 100Mi
+
+volume:
+  name: db-sqlite3
+  mountPath: /manning/jx-payments-manning/db.sqlite3
 
 # values we use from the `jx-requirements.yml` file if we are using helmfile and helm 3
 jxRequirements:
